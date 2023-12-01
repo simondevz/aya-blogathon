@@ -1,0 +1,74 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+// datasource db {
+//   provider = "postgresql"
+//   url      = env("DATABASE_URL")
+// }
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model User {
+  id              Int      @id @default(autoincrement())
+  username        String   @unique
+  first_name      String?
+  last_name       String?
+  hashed_password String
+  email           String   @unique
+  role            String   @default("reader") // or author
+  posts           Post[]
+  profile_picture Image?   @relation(fields: [imageId], references: [id])
+  createdAt       DateTime @default(now())
+  imageId         Int?
+}
+
+model Post {
+  id          Int               @id @default(autoincrement())
+  title       String            
+  md_content  MdContent         @relation(fields: [mdContentId], references: [id])
+  keywords    PostKeywordLink[]
+  image       Image             @relation(fields: [imageId], references: [id])
+  createdAt   DateTime          @default(now())
+  draft       Boolean
+  author      User?             @relation(fields: [authorId], references: [id])
+  authorId    Int?
+  imageId     Int
+  mdContentId Int
+}
+
+model Keyword {
+  id    Int               @id @default(autoincrement())
+  word  String
+  posts PostKeywordLink[]
+}
+
+model PostKeywordLink {
+  id        Int      @id @default(autoincrement())
+  post      Post?    @relation(fields: [postId], references: [id])
+  postId    Int?
+  Keyword   Keyword? @relation(fields: [keywordId], references: [id])
+  keywordId Int?
+}
+
+model Image {
+  id        Int      @id @default(autoincrement())
+  url       String
+  public_id String
+  createdAt DateTime @default(now())
+  User      User[]
+  Post      Post[]
+}
+
+model MdContent {
+  id          Int      @id @default(autoincrement())
+  text        String
+  Post        Post[]
+  lastUpdated DateTime
+}
