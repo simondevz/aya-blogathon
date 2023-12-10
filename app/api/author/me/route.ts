@@ -5,8 +5,8 @@ export async function GET(request: any) {
     const { author_id } = request.nextUrl.searchParams;
 
     // make sure user is authenticated
-    const authenticated: any = authenticateUser(request);
-    if (!authenticated || !(author_id === authenticated.user.id))
+    const authenticated: any = authenticateUser();
+    if (!authenticated || !(author_id === authenticated.id))
       return Response.json({ message: "Unauthorized" }, { status: 403 });
 
     const author = await prisma.user.findUnique({

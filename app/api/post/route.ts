@@ -2,7 +2,7 @@ import { authenticateUser, deleteImage, prisma, uploadImage } from "../utils";
 
 export async function GET(request: any) {
   try {
-    const { post_id } = request.nextUrl.searchParams;
+    const post_id = Number(request.nextUrl.searchParams.get("post_id"));
     const post = await prisma.post.findUnique({
       where: { id: post_id, draft: false },
       include: { keywords: true, author: true, image: true, md_content: true },
@@ -22,11 +22,12 @@ export async function GET(request: any) {
 
 export async function POST(request: any) {
   try {
-    const { author_id, text, title, image, keywords, as_draft } = request.body;
+    const { author_id, text, title, image, keywords, as_draft } =
+      await request.json();
 
     // make sure user is authenticated
-    const authenticated: any = authenticateUser(request);
-    if (!authenticated || !(author_id === authenticated.user.id))
+    const authenticated: any = authenticateUser();
+    if (!authenticated || !(author_id === authenticated.id))
       return Response.json({ message: "Unauthorized" }, { status: 403 });
 
     //   validate data passed
@@ -57,7 +58,8 @@ export async function POST(request: any) {
       );
 
     // upload image and add to db
-    const imageData = await uploadImage(image);
+    let imageData;
+    if (image) imageData = await uploadImage(image);
 
     // create the md_content
     const md_content = await prisma.mdContent.create({
@@ -70,7 +72,7 @@ export async function POST(request: any) {
         authorId: author_id,
         title: title,
         mdContentId: md_content.id,
-        imageId: imageData.id,
+        imageId: imageData?.id,
         draft: as_draft === undefined ? false : as_draft,
       },
     });
@@ -115,8 +117,8 @@ export async function PUT(request: any) {
       request.body;
 
     // make sure user is authenticated
-    const authenticated: any = authenticateUser(request);
-    if (!authenticated || !(author_id === authenticated.user.id))
+    const authenticated: any = authenticateUser();
+    if (!authenticated || !(author_id === authenticated.id))
       return Response.json({ message: "Unauthorized" }, { status: 403 });
 
     //   validate data passed
@@ -217,8 +219,8 @@ export async function DELETE(request: any) {
     const { author_id, post_id } = request.nextUrl.searchParams;
 
     // make sure user is authenticated
-    const authenticated: any = authenticateUser(request);
-    if (!authenticated || !(author_id === authenticated.user.id))
+    const authenticated: any = authenticateUser();
+    if (!authenticated || !(author_id === authenticated.id))
       return Response.json({ message: "Unauthorized" }, { status: 403 });
 
     const post = await prisma.post.findUnique({

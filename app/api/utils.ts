@@ -1,13 +1,15 @@
 import { v2 as cloudinary } from "cloudinary";
 import { PrismaClient } from "@prisma/client";
+import { headers } from "next/headers";
 import crypto from "crypto";
+import jwt from "jsonwebtoken";
 
 export const prisma = new PrismaClient();
 
 cloudinary.config({
   cloud_name: process.env.CLOUDINARY_NAME,
   api_key: process.env.CLOUDINARY_API_KEY,
-  api_secret: "YipO5_uZZSLqTUvSA6",
+  api_secret: process.env.CLOUDINARY_API_SECRET,
 });
 
 export async function uploadImage(image: any) {
@@ -29,12 +31,6 @@ export async function deleteImage(id: number) {
     invalidate: true,
   });
   await prisma.image.delete({ where: { id } });
-}
-
-export function validateEmail(email: string) {
-  // Regular expression for basic email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  return emailRegex.test(email);
 }
 
 export function validatePassword(password: string) {
@@ -75,8 +71,13 @@ export function verifyPassword(providedPassword: string, storedHash: string) {
   return hashedProvidedPassword === storedHash;
 }
 
-export function authenticateUser(request: any) {
-  const authHeader = request.headers.authorization;
-  console.log(authHeader);
-  return false;
+export function authenticateUser() {
+  const token = headers().get("authorization")?.split(" ")[1];
+  if (!token) return false;
+  try {
+    return jwt.verify(token, process.env.SECRET_KEY as string);
+  } catch (error) {
+    console.log(error);
+    return false;
+  }
 }

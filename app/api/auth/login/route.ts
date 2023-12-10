@@ -4,7 +4,7 @@ import { hashPassword, prisma } from "../../utils";
 
 export async function POST(request: any) {
   try {
-    const { username, email, password }: CreateUser = request.body;
+    const { username, email, password }: CreateUser = await request.json();
 
     // validate input
     if (!(username || email))
@@ -31,7 +31,7 @@ export async function POST(request: any) {
     if (user.hashed_password === hashPassword(password)) {
       const token = jwt.sign(
         { username, email, role: user.role, id: user.id },
-        "your_secret_key",
+        process.env.SECRET_KEY as string,
         { expiresIn: "7d" }
       );
       return Response.json({ Access_token: token }, { status: 200 });

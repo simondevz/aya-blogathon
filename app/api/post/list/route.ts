@@ -8,7 +8,25 @@ export async function GET(request: any) {
     // get all posts no filters or keywords attached
     if (!(keywords || author_id)) {
       posts = await prisma.post.findMany({
-        include: { image: true, keywords: true, author: true },
+        where: { draft: false },
+        include: {
+          image: true,
+          keywords: {
+            select: {
+              id: true,
+              Keyword: true,
+            },
+          },
+          author: {
+            select: {
+              id: true,
+              username: true,
+              first_name: true,
+              last_name: true,
+              email: true,
+            },
+          },
+        },
       });
     }
 
