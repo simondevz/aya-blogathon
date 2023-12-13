@@ -26,7 +26,7 @@ export default function PostPage({ params }: { params: { post_id: number } }) {
       <h1>{post?.title}</h1>
       {post?.md_content?.text ? (
         <div
-          className="mdToHtml"
+          className="mdToHtml prose lg:prose-xl"
           dangerouslySetInnerHTML={{
             __html: DOMPurify.sanitize(
               marked.parse(post?.md_content?.text as string) as string

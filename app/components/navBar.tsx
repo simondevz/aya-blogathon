@@ -6,16 +6,16 @@ import logo from "./decentralizedIQ.svg";
 
 export default function NavBar() {
   return (
-    <nav className="flex justify-between px-10 py-2">
+    <nav className="flex justify-between lg:px-10 md:px-6 px-2 py-2">
       <div className="flex my-auto">
         <Image
           src={logo}
           alt="logo"
-          className="flex my-auto w-56 mx-[-1.35rem]"
+          className="flex my-auto md:w-56 w-40 md:mx-[-1.35rem] mx-[-1rem]"
         />
       </div>
 
-      <div className="flex gap-6 my-auto">
+      <div className="flex md:gap-6 gap-4 my-auto">
         <SearchBar />
         <LoginBtn />
         <Menu />

@@ -15,7 +15,7 @@ export default function Footer() {
     <footer className="flex justify-around bg-milk px-12 pt-20 pb-40">
       <div className="flex flex-col gap-4">
         <Image src={logo} alt="logo" className="w-56" />
-        <span className="flex text-[0.75rem]">
+        <span className="flex text-[0.75rem] text-ash/70 text-semibold">
           <span className="flex my-auto ">&copy;</span>
           <span className="flex my-auto">
             2023 Decentralized IQ. All Rights Reserved.
@@ -76,16 +76,16 @@ export default function Footer() {
           <span>Support</span>
         </div>
       </div>
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-4 sm:flex hidden">
         <div className="flex gap-2">
-          <RiInstagramFill />
-          <RiTwitterXLine />
-          <MdFacebook />
-          <RiLinkedinBoxFill />
+          <RiInstagramFill className={"w-[1.2rem] h-[1.2rem]"} />
+          <RiTwitterXLine className={"w-[1.2rem] h-[1.2rem]"} />
+          <MdFacebook className={"w-[1.2rem] h-[1.2rem]"} />
+          <RiLinkedinBoxFill className={"w-[1.2rem] h-[1.2rem]"} />
         </div>
         <div className="flex text-[0.75rem] gap-2">
           <span className="my-auto">
-            <TbWorld />
+            <TbWorld className={"w-[1.2rem] h-[1.2rem]"} />
           </span>
           <span className="my-auto">English</span>
         </div>

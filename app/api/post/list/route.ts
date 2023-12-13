@@ -2,8 +2,11 @@ import { prisma } from "../../utils";
 
 export async function GET(request: any) {
   try {
-    const { author_id, keywords } = request.nextUrl.searchParams;
-    let posts;
+    const keywords = request.nextUrl.searchParams.get("keywords");
+    const author_id = request.nextUrl.searchParams.get("author_id");
+    const include_drafts = request.nextUrl.searchParams.get("include_drafts");
+
+    let posts: Array<any> = [];
 
     // get all posts no filters or keywords attached
     if (!(keywords || author_id)) {
@@ -33,7 +36,7 @@ export async function GET(request: any) {
     // get posts by an author
     if (author_id && !keywords) {
       posts = await prisma.post.findMany({
-        where: { authorId: author_id, draft: false },
+        where: { authorId: author_id, draft: include_drafts ? true : false },
         include: { image: true, keywords: true, author: true },
       });
     }
@@ -86,7 +89,7 @@ export async function GET(request: any) {
 
     // disconnect and return
     await prisma.$disconnect();
-    return Response.json({ posts }, { status: 200 });
+    return Response.json({ posts, count: posts?.length }, { status: 200 });
   } catch (error: any) {
     console.log(error);
     return Response.json({

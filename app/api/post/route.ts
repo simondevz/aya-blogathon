@@ -3,9 +3,17 @@ import { authenticateUser, deleteImage, prisma, uploadImage } from "../utils";
 export async function GET(request: any) {
   try {
     const post_id = Number(request.nextUrl.searchParams.get("post_id"));
+    const isDraft: boolean =
+      Boolean(Number(request.nextUrl.searchParams.get("isDraft"))) || false;
+
     const post = await prisma.post.findUnique({
-      where: { id: post_id, draft: false },
-      include: { keywords: true, author: true, image: true, md_content: true },
+      where: { id: post_id, draft: isDraft },
+      include: {
+        keywords: { include: { Keyword: true } },
+        author: true,
+        image: true,
+        md_content: true,
+      },
     });
 
     // disconnect and return
@@ -60,6 +68,7 @@ export async function POST(request: any) {
     // upload image and add to db
     let imageData;
     if (image) imageData = await uploadImage(image);
+    console.log(imageData);
 
     // create the md_content
     const md_content = await prisma.mdContent.create({
@@ -114,7 +123,7 @@ export async function POST(request: any) {
 export async function PUT(request: any) {
   try {
     const { post_id, author_id, text, title, image, keywords, as_draft } =
-      request.body;
+      await request.json();
 
     // make sure user is authenticated
     const authenticated: any = authenticateUser();
@@ -122,7 +131,9 @@ export async function PUT(request: any) {
       return Response.json({ message: "Unauthorized" }, { status: 403 });
 
     //   validate data passed
-    const post = await prisma.post.findUnique({ where: { id: post_id } });
+    const post = await prisma.post.findUnique({
+      where: { id: Number(post_id) },
+    });
     if (!post)
       return Response.json({ message: "Post not found" }, { status: 404 });
     if (!author_id)
@@ -147,7 +158,8 @@ export async function PUT(request: any) {
     //   only author of the post gets to update it
     if (author_id === post?.authorId) {
       // upload new image
-      const imageData = await uploadImage(image);
+      let imageData;
+      if (image) imageData = await uploadImage(image);
 
       // update the md_content
       const md_content = await prisma.mdContent.update({
@@ -157,12 +169,12 @@ export async function PUT(request: any) {
 
       // create post
       const updatedPost = await prisma.post.update({
-        where: { id: post_id },
+        where: { id: Number(post_id) },
         data: {
           authorId: author_id,
           title: title,
           mdContentId: md_content.id,
-          imageId: imageData.id,
+          [imageData?.id ? "imageId" : ""]: imageData?.id,
           draft: as_draft === undefined ? false : as_draft,
         },
       });
@@ -193,7 +205,7 @@ export async function PUT(request: any) {
       );
 
       //   delete former image
-      await deleteImage(post?.imageId as number);
+      if (image && post?.imageId) await deleteImage(post?.imageId as number);
 
       // disconnect and return
       await prisma.$disconnect();
@@ -216,7 +228,9 @@ export async function PUT(request: any) {
 
 export async function DELETE(request: any) {
   try {
-    const { author_id, post_id } = request.nextUrl.searchParams;
+    const post_id = Number(request.nextUrl.searchParams.get("post_id"));
+    const author_id = Number(request.nextUrl.searchParams.get("author_id"));
+    console.log(author_id, post_id);
 
     // make sure user is authenticated
     const authenticated: any = authenticateUser();
@@ -228,17 +242,14 @@ export async function DELETE(request: any) {
     });
 
     if (author_id === post?.authorId) {
-      // delete md_content
-      await prisma.mdContent.delete({ where: { id: post?.mdContentId } });
-
       // delete image
-      await deleteImage(post?.imageId as number);
+      if (post?.imageId) await deleteImage(post?.imageId as number);
 
       // delete keyword pairs
       await prisma.postKeywordLink.deleteMany({ where: { postId: post?.id } });
 
-      //   delete post
-      await prisma.post.delete({ where: { id: post?.id } });
+      // delete md_content, also deletes post
+      await prisma.mdContent.delete({ where: { id: post?.mdContentId } });
 
       // disconnect and return
       await prisma.$disconnect();

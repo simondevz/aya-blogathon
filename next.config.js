@@ -5,6 +5,14 @@ const nextConfig = {
   sassOptions: {
     includePaths: [path.join(__dirname, "styles")],
   },
+  images: {
+    remotePatterns: [
+      {
+        protocol: "http",
+        hostname: "res.cloudinary.com",
+      },
+    ],
+  },
 };
 
 module.exports = nextConfig;

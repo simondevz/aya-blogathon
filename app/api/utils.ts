@@ -26,11 +26,16 @@ export async function uploadImage(image: any) {
 
 // create a function for deleting images
 export async function deleteImage(id: number) {
-  const image = await prisma.image.findUnique({ where: { id } });
-  await cloudinary.uploader.destroy(image?.public_id as string, {
-    invalidate: true,
-  });
-  await prisma.image.delete({ where: { id } });
+  try {
+    const image = await prisma.image.findUnique({ where: { id } });
+    await cloudinary.uploader.destroy(image?.public_id as string, {
+      invalidate: true,
+    });
+    await prisma.image.delete({ where: { id } });
+  } catch (error) {
+    console.log("rigth here");
+    console.log(error);
+  }
 }
 
 export function validatePassword(password: string) {

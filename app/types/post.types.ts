@@ -1,4 +1,5 @@
 export type CreatePostType = {
+  post_id?: number;
   author_id: number;
   text: string;
   title: string;
@@ -15,7 +16,7 @@ export type PostType = {
   createdAt: string;
   draft: boolean;
   imageId?: number;
-  image?: any; // change later
+  image?: ImageType;
   mdContentId: number;
   md_content?: MdContentType;
   keywords: KeywordType[];
@@ -35,7 +36,7 @@ export type MineaturPostType = {
   createdAt: string;
   draft: boolean;
   imageId?: number;
-  image?: any; // change later
+  image?: ImageType | null; // change later
   mdContentId: number;
   keywords: KeywordType[];
   readTime: number;
@@ -44,7 +45,7 @@ export type MineaturPostType = {
 
 export type KeywordType = {
   id: number;
-  keyword: {
+  Keyword: {
     id: number;
     word: string;
   };
@@ -54,4 +55,11 @@ export type MdContentType = {
   id: number;
   text: string;
   lastUpdated: string;
+};
+
+export type ImageType = {
+  id: number;
+  url: string;
+  public_id: string;
+  createdA: string;
 };
