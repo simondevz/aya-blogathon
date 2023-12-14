@@ -23,9 +23,7 @@ export default function ListPostPage({ editAccess }: { editAccess?: boolean }) {
     (async () => {
       try {
         setLoading(true);
-        const { data } = await axios.get(
-          "/api/post/list" + (author_id ? "?author_id=" + author_id : "")
-        );
+        const { data } = await axios.get("/api/post/list");
 
         setPosts(data.posts);
         setPostCount(data.count);
@@ -79,9 +77,13 @@ export default function ListPostPage({ editAccess }: { editAccess?: boolean }) {
       )}
       <div className="grid lg:gap-12 gap-6 auto-rows-auto grid-cols-3 lg:mx-12 mx-6 lg:mb-10 mb-8 md:grid-cols-3 sm:grid-cols-2 grid-cols-1">
         {posts?.length ? (
-          posts.map((post: MineaturPostType, index: number) => {
-            return <BlogPost key={index} post={post} editAccess={editAccess} />;
-          })
+          posts
+            .filter((post) => Number(post.authorId) === Number(author_id))
+            .map((post: MineaturPostType, index: number) => {
+              return (
+                <BlogPost key={index} post={post} editAccess={editAccess} />
+              );
+            })
         ) : loading ? (
           <></>
         ) : author_id ? (
