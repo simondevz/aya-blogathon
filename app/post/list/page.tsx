@@ -85,9 +85,13 @@ export default function ListPostPage({ editAccess }: { editAccess?: boolean }) {
         ) : loading ? (
           <></>
         ) : author_id ? (
-          <div className="flex w-full mx-auto">No articles yet...</div>
+          <div className="flex whitespace-nowrap w-full mx-auto">
+            You Have no articles yet...
+          </div>
         ) : (
-          <div className="flex w-full mx-auto">You Have no articles yet...</div>
+          <div className="flex whitespace-nowrap w-full mx-auto">
+            No articles yet...
+          </div>
         )}
       </div>
       <Footer />

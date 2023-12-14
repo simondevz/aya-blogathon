@@ -27,7 +27,7 @@ export default function LoginBtn() {
         return decodedToken;
       });
     }
-  }, []);
+  }, [pathname]);
 
   return (
     <>
@@ -38,7 +38,7 @@ export default function LoginBtn() {
             (pathname === "/auth/login" || pathname === "/auth/signup"
               ? "hidden "
               : "flex ") +
-            " justify-center bg-blue rounded-md px-6 h-[2.2rem] my-auto"
+            " justify-center bg-blue rounded-md lg:px-6 px-4 lg:h-[2.2rem] h-[1.8rem] lg:text-base text-[0.875rem] my-auto"
           }
           onClick={() => {
             setLoading(true);
@@ -61,7 +61,7 @@ export default function LoginBtn() {
           disabled={loading}
           className={
             (pathname.includes("dashboard") ? "hidden " : "flex ") +
-            " justify-center bg-blue rounded-md lg:px-6 px-4 lg:h-[2.2rem] h-[2rem] lg:text-base text-[0.875rem] my-auto"
+            " justify-center bg-blue rounded-md lg:px-6 px-4 lg:h-[2.2rem] h-[1.8rem] lg:text-base text-[0.875rem] my-auto"
           }
           onClick={() => {
             setLoading(true);
