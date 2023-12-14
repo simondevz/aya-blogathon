@@ -1,13 +1,17 @@
+"use client";
+
 import Image from "next/image";
 import LoginBtn from "./loginBtn";
 import Menu from "./menu";
 import SearchBar from "./searchBar";
 import logo from "./decentralizedIQ.svg";
+import { useRouter } from "next/navigation";
 
 export default function NavBar() {
+  const router = useRouter();
   return (
     <nav className="flex justify-between lg:px-10 md:px-6 px-2 py-2">
-      <div className="flex my-auto">
+      <div onClick={() => router.push("/")} className="flex my-auto">
         <Image
           src={logo}
           alt="logo"
