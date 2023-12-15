@@ -76,7 +76,12 @@ export default function ListPostPage({ editAccess }: { editAccess?: boolean }) {
       <div className="grid lg:gap-12 gap-6 auto-rows-auto grid-cols-3 lg:mx-12 mx-6 lg:mb-10 mb-8 md:grid-cols-3 sm:grid-cols-2 grid-cols-1">
         {posts?.length ? (
           posts
-            .filter((post) => Number(post.authorId) === Number(author_id))
+            .filter((post) => {
+              if (author_id) {
+                return Number(post.authorId) === Number(author_id);
+              }
+              return true;
+            })
             .map((post: MineaturPostType, index: number) => {
               return (
                 <BlogPost key={index} post={post} editAccess={editAccess} />

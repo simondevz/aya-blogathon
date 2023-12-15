@@ -93,7 +93,7 @@ export default function AuthorCreatePost({
       postData.image = e?.target?.result;
     };
 
-    if (toEditImage?.url) if (files?.length) reader.readAsDataURL(files[0]);
+    if (files?.length) reader.readAsDataURL(files[0]);
     if (!toEditImage?.url)
       if (!files?.length) {
         return Swal.fire({
@@ -102,8 +102,6 @@ export default function AuthorCreatePost({
           icon: "error",
           confirmButtonText: "Cool",
         });
-      } else {
-        reader.readAsDataURL(files[0]);
       }
 
     postData.keywords = keyword.split(",").map((word: string) => word.trim());
@@ -201,8 +199,8 @@ export default function AuthorCreatePost({
                   }
                   alt="choosen cover"
                   className="w-full h-full rounded-full object-cover"
-                  width={100}
-                  height={100}
+                  width={4024}
+                  height={4024}
                 />
               ) : (
                 <span className="my-auto">Add Cover Image</span>

@@ -66,8 +66,8 @@ export default function BlogPost({
         src={post?.image?.url || logo}
         alt={"post"}
         className="border rounded-lg object-fit w-full lg:h-[12rem] h-[8rem]"
-        width={100}
-        height={100}
+        width={4024}
+        height={4024}
         priority
       />
       <span className="absolute flex bg-transparent hover:bg-black/30 w-full rounded-lg lg:h-[12rem] h-[8rem] gap-2 top-[0rem] left-[0rem] lg:p-4 p-2">

@@ -83,8 +83,8 @@ export default function Home() {
                 <Image
                   src={posts[0]?.image?.url || logo}
                   alt="featured post"
-                  width={100}
-                  height={100}
+                  width={4024}
+                  height={4024}
                   className="lg:w-[35rem] lg:h-[19rem] w-[30rem] h-[13rem] rounded-md object-fit"
                 />
               ) : (

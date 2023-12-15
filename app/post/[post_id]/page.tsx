@@ -5,6 +5,9 @@ import DOMPurify from "dompurify";
 import { marked } from "marked";
 import { useEffect, useState } from "react";
 import "@/app/styles/md.module.scss";
+import Footer from "@/app/components/footer";
+import Image from "next/image";
+import logo from "../../components/decentralizedIQ.png";
 
 export default function PostPage({ params }: { params: { post_id: number } }) {
   const [post, setPost] = useState<PostType>();
@@ -23,19 +26,28 @@ export default function PostPage({ params }: { params: { post_id: number } }) {
 
   return (
     <div className="flex flex-col">
-      <h1>{post?.title}</h1>
       {post?.md_content?.text ? (
-        <div
-          className="mdToHtml prose lg:prose-xl"
-          dangerouslySetInnerHTML={{
-            __html: DOMPurify.sanitize(
-              marked.parse(post?.md_content?.text as string) as string
-            ),
-          }}
-        ></div>
+        <div className="lg:p-16 md:p-8 sm:p-6 p-4 flex flex-col gap-4 ">
+          <Image
+            src={post?.image?.url || logo}
+            alt={"article"}
+            width={4024}
+            height={4024}
+            className="w-full lg:h-[32rem] md:h-[28rem] rounded-2xl"
+          />
+          <div
+            className="mdToHtml prose lg:prose-xl"
+            dangerouslySetInnerHTML={{
+              __html: DOMPurify.sanitize(
+                marked.parse(post?.md_content?.text as string) as string
+              ),
+            }}
+          ></div>
+        </div>
       ) : (
         <div>loading...</div>
       )}
+      <Footer />
     </div>
   );
 }
