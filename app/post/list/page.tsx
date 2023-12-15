@@ -11,7 +11,6 @@ import Swal from "sweetalert2";
 
 export default function ListPostPage({ editAccess }: { editAccess?: boolean }) {
   const [posts, setPosts] = useState<MineaturPostType[]>([]);
-  const [postCount, setPostCount] = useState<number>(0);
   const searchParams = useSearchParams();
 
   const router = useRouter();
@@ -26,7 +25,6 @@ export default function ListPostPage({ editAccess }: { editAccess?: boolean }) {
         const { data } = await axios.get("/api/post/list");
 
         setPosts(data.posts);
-        setPostCount(data.count);
         setLoading(false);
       } catch (error: any) {
         setLoading(false);
@@ -68,7 +66,7 @@ export default function ListPostPage({ editAccess }: { editAccess?: boolean }) {
         )}
       </div>
       <h1 className="lg:text-[1.5rem] text-[1.2rem] font-semibold my-4 lg:mx-12 mx-6">
-        Articles({postCount})
+        Articles
       </h1>
       {loading ? (
         <PacmanLoader color="#000AFF" className="mx-auto w-full" />
@@ -79,8 +77,7 @@ export default function ListPostPage({ editAccess }: { editAccess?: boolean }) {
         {posts?.length ? (
           posts
             .filter((post) => Number(post.authorId) === Number(author_id))
-            .map((post: MineaturPostType, index: number, array) => {
-              setPostCount(array.length);
+            .map((post: MineaturPostType, index: number) => {
               return (
                 <BlogPost key={index} post={post} editAccess={editAccess} />
               );

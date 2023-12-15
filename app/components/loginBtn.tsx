@@ -27,7 +27,7 @@ export default function LoginBtn() {
         return decodedToken;
       });
     }
-  }, [pathname]);
+  }, []);
 
   return (
     <>
