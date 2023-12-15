@@ -49,7 +49,7 @@ export default function Footer() {
         <h3 className="font-semibold mb-4">Discover</h3>
         <div className="flex lg:text-[0.875rem] text-[0.75rem] gap-4 flex-col">
           <span>Topics</span>
-          <span>Courses</span>
+          <span>Coursess</span>
           <span>Glossaries</span>
           <span>Bitcoin Halving</span>
         </div>
