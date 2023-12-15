@@ -2,9 +2,10 @@ import { prisma } from "../../utils";
 
 export async function GET(request: any) {
   try {
-    const keywords = request.nextUrl.searchParams.get("keywords");
-    const author_id = request.nextUrl.searchParams.get("author_id");
-    const include_drafts = request.nextUrl.searchParams.get("include_drafts");
+    const { searchParams } = new URL(request.url);
+    const keywords = searchParams.get("keywords");
+    const author_id = Number(searchParams.get("author_id"));
+    const include_drafts = searchParams.get("include_drafts");
 
     let posts: Array<any> = [];
 
@@ -33,59 +34,59 @@ export async function GET(request: any) {
       });
     }
 
-    // get posts by an author
-    if (author_id && !keywords) {
-      posts = await prisma.post.findMany({
-        where: { authorId: author_id, draft: include_drafts ? true : false },
-        include: { image: true, keywords: true, author: true },
-      });
-    }
+    // // get posts by an author
+    // if (author_id && !keywords) {
+    //   posts = await prisma.post.findMany({
+    //     where: { authorId: author_id as number, draft: include_drafts ? true : false },
+    //     include: { image: true, keywords: true, author: true },
+    //   });
+    // }
 
-    // by keywords
-    if (keywords && !author_id) {
-      const keywordsArr = keywords.split(",");
-      const postsLink = await prisma.postKeywordLink.findMany({
-        where: {
-          OR: keywordsArr.map((keyword: string) => ({
-            content: {
-              contains: keyword,
-            },
-          })),
-        },
-        include: {
-          post: {
-            where: { draft: false },
-            include: { image: true, keywords: true, author: true },
-          },
-        },
-      });
+    // // by keywords
+    // if (keywords && !author_id) {
+    //   const keywordsArr = keywords.split(",");
+    //   const postsLink = await prisma.postKeywordLink.findMany({
+    //     where: {
+    //       OR: keywordsArr.map((keyword: string) => ({
+    //         content: {
+    //           contains: keyword,
+    //         },
+    //       })),
+    //     },
+    //     include: {
+    //       post: {
+    //         where: { draft: false },
+    //         include: { image: true, keywords: true, author: true },
+    //       },
+    //     },
+    //   });
 
-      posts = postsLink.map((post) => post.post);
-    }
+    //   posts = postsLink.map((post) => post.post);
+    // }
 
-    // by keywords and authors
-    if (keywords && author_id) {
-      const keywordsArr = keywords.split(",");
-      const postsLink = await prisma.postKeywordLink.findMany({
-        where: {
-          OR: keywordsArr.map((keyword: string) => ({
-            content: {
-              contains: keyword,
-            },
-          })),
-        },
-        include: {
-          post: {
-            where: { draft: false },
-            include: { image: true, keywords: true, author: true },
-          },
-        },
-      });
+    // // by keywords and authors
+    // if (keywords && author_id) {
+    //   const keywordsArr = keywords.split(",");
+    //   const postsLink = await prisma.postKeywordLink.findMany({
+    //     where: {
+    //       OR: keywordsArr.map((keyword: string) => ({
+    //         content: {
+    //           contains: keyword,
+    //         },
+    //       })),
+    //     },
+    //     include: {
+    //       post: {
+    //         where: { draft: false },
+    //         include: { image: true, keywords: true, author: true },
+    //       },
+    //     },
+    //   });
 
-      posts = postsLink
-        .filter((post) => post.post?.authorId === author_id)
-        .map((post) => post.post);
-    }
+    //   posts = postsLink
+    //     .filter((post) => post.post?.authorId === author_id)
+    //     .map((post) => post.post);
+    // }
 
     // disconnect and return
     await prisma.$disconnect();
