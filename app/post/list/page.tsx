@@ -79,7 +79,8 @@ export default function ListPostPage({ editAccess }: { editAccess?: boolean }) {
         {posts?.length ? (
           posts
             .filter((post) => Number(post.authorId) === Number(author_id))
-            .map((post: MineaturPostType, index: number) => {
+            .map((post: MineaturPostType, index: number, array) => {
+              setPostCount(array.length);
               return (
                 <BlogPost key={index} post={post} editAccess={editAccess} />
               );
