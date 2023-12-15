@@ -68,7 +68,6 @@ export async function POST(request: any) {
     // upload image and add to db
     let imageData;
     if (image) imageData = await uploadImage(image);
-    console.log(imageData);
 
     // create the md_content
     const md_content = await prisma.mdContent.create({
@@ -188,10 +187,12 @@ export async function PUT(request: any) {
         keywords.map(async (keyword: string) => {
           // check if the keyword existed before
           for (let index = 0; index < all_keywords.length; index++) {
-            if (keyword === all_keywords[index].word)
+            if (keyword === all_keywords[index].word) {
               await prisma.postKeywordLink.create({
                 data: { postId: post.id, keywordId: all_keywords[index].id },
               });
+              return;
+            }
           }
 
           // if it did not return new one

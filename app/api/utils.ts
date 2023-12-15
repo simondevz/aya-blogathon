@@ -13,15 +13,21 @@ cloudinary.config({
 });
 
 export async function uploadImage(image: any) {
-  const result = await cloudinary.uploader.unsigned_upload(
-    image,
-    "aya_blogathon"
-  );
+  try {
+    console.log(image);
 
-  const newImage = await prisma.image.create({
-    data: { url: result.url, public_id: result.public_id },
-  });
-  return newImage;
+    const result = await cloudinary.uploader.unsigned_upload(
+      image,
+      "aya_blogathon"
+    );
+
+    const newImage = await prisma.image.create({
+      data: { url: result.url, public_id: result.public_id },
+    });
+    return newImage;
+  } catch (error) {
+    console.log(error);
+  }
 }
 
 // create a function for deleting images

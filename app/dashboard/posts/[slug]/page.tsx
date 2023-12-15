@@ -20,7 +20,7 @@ export default function AuthorCreatePost({
 }) {
   const [keyword, setKeyword] = useState<string>("");
   const [accessToken, setAccessToken] = useState("");
-  const [files, setFiles] = useState<any>();
+  const [files, setFiles] = useState<FileList | null>();
   const [toEditImage, setToEditImage] = useState<ImageType>();
 
   const router = useRouter();
@@ -62,7 +62,7 @@ export default function AuthorCreatePost({
             return {
               ...prev,
               post_id: post_id as number,
-              text: post.md_content?.text as string,
+              text: post?.md_content?.text as string,
               title: post?.title,
               keywords: post?.keywords.map((keyword) => keyword.Keyword?.word),
             };
@@ -88,12 +88,24 @@ export default function AuthorCreatePost({
   const handleSubmit = async (event: any) => {
     event.preventDefault();
 
-    const reader = new FileReader();
-    reader.onload = (e: any) => {
-      postData.image = e?.target?.result;
+    const toBase64 = (file: File) => {
+      return new Promise((resolve, reject) => {
+        const fileReader = new FileReader();
+
+        fileReader.readAsDataURL(file);
+
+        fileReader.onload = () => {
+          resolve(fileReader.result);
+        };
+
+        fileReader.onerror = (error) => {
+          reject(error);
+        };
+      });
     };
 
-    if (files?.length) reader.readAsDataURL(files[0]);
+    let uploadImage;
+    if (files?.length) uploadImage = await toBase64(files[0]);
     if (!toEditImage?.url)
       if (!files?.length) {
         return Swal.fire({
@@ -132,10 +144,20 @@ export default function AuthorCreatePost({
     try {
       setLoading(true);
       const headers = { Authorization: `Bearer ${accessToken}` };
+      const uploadData = postData;
+
       if (params?.slug === "edit")
-        await axios.put("/api/post", postData, { headers });
+        await axios.put(
+          "/api/post",
+          { ...postData, image: uploadImage as string },
+          { headers }
+        );
       if (params?.slug === "create")
-        await axios.post("/api/post", postData, { headers });
+        await axios.post(
+          "/api/post",
+          { ...postData, image: uploadImage as string },
+          { headers }
+        );
 
       setLoading(false);
       Swal.fire({
@@ -164,11 +186,6 @@ export default function AuthorCreatePost({
       ...postData,
       [event.target.name]: event.target.value,
     });
-  };
-
-  const handleFileChange = (event: any) => {
-    const files = event.target.files;
-    setFiles([...files]);
   };
 
   return (
@@ -213,7 +230,9 @@ export default function AuthorCreatePost({
             id="image"
             className=" bg-transparent hidden"
             placeholder="image"
-            onChange={handleFileChange}
+            onChange={(event) => {
+              setFiles(event.target?.files);
+            }}
           />
         </div>
         <Input
