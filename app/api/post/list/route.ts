@@ -2,37 +2,31 @@ import { prisma } from "../../utils";
 
 export async function GET(request: any) {
   try {
-    const { searchParams } = new URL(request.url);
-    const keywords = searchParams.get("keywords");
-    const author_id = Number(searchParams.get("author_id"));
-    const include_drafts = searchParams.get("include_drafts");
-
     let posts: Array<any> = [];
 
     // get all posts no filters or keywords attached
-    if (!(keywords || author_id)) {
-      posts = await prisma.post.findMany({
-        where: { draft: false },
-        include: {
-          image: true,
-          keywords: {
-            select: {
-              id: true,
-              Keyword: true,
-            },
-          },
-          author: {
-            select: {
-              id: true,
-              username: true,
-              first_name: true,
-              last_name: true,
-              email: true,
-            },
+
+    posts = await prisma.post.findMany({
+      where: { draft: false },
+      include: {
+        image: true,
+        keywords: {
+          select: {
+            id: true,
+            Keyword: true,
           },
         },
-      });
-    }
+        author: {
+          select: {
+            id: true,
+            username: true,
+            first_name: true,
+            last_name: true,
+            email: true,
+          },
+        },
+      },
+    });
 
     // // get posts by an author
     // if (author_id && !keywords) {
